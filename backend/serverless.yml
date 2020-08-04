@@ -76,6 +76,29 @@ functions:
           path: notes
           cors: true
 
+  CreateNote:
+    handler: src/lambda/http/createNote.handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action: dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}
+      - Effect: "Allow"
+        Action:
+          - xray:PutTelemetryRecords
+          - xray:PutTraceSegments
+        Resource: "*"
+    events:
+      - http:
+          authorizer: Auth
+          method: post
+          path: notes
+          cors: true
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Create a new note
+            description: Create a new note
+            requestModels:
+              'application/json': CreateNoteRequest
 
 resources:
   Resources:
