@@ -86,7 +86,7 @@ export class NoteService {
         }).promise();
     }
 
-    async updateTodoAttachment(noteId: String, userId: String) {
+    async updateNoteAttachment(noteId: String, userId: String) {
 
         await this.docClient.update({
             TableName: this.notesTable,
@@ -105,7 +105,7 @@ export class NoteService {
         }).promise();
     }
 
-    async todoIdExists(noteId: String, userId: String) {
+    async noteIdExists(noteId: String, userId: String) {
         const result = await this.docClient.get({
             TableName: this.notesTable,
             Key: {
