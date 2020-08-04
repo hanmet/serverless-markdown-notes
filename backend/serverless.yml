@@ -100,6 +100,31 @@ functions:
             requestModels:
               'application/json': CreateNoteRequest
 
+  UpdateNote:
+    handler: src/lambda/http/updateNote.handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action: dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}
+      - Effect: "Allow"
+        Action:
+          - xray:PutTelemetryRecords
+          - xray:PutTraceSegments
+        Resource: "*"
+    events:
+      - http:
+          authorizer: Auth
+          method: patch
+          path: notes/{noteId}
+          cors: true
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Update a note item
+            description: Update a note item
+            requestModels:
+              'application/json': UpdateNoteRequest
+
+
 resources:
   Resources:
     NotesTable:
