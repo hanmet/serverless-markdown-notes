@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "group",
+    "type": "object",
+    "properties": {
+        "title": {
+            "type": "string"
+        },
+        "text": {
+            "type": "string"
+        },
+        "attachmentUrls": {
+            "type": "array"
+        }
+    },
+    "required": [
+        "title",
+        "text",
+        "attachmentUrls"
+    ],
+    "additionalProperties": false
+}
