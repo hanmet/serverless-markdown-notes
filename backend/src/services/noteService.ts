@@ -23,9 +23,9 @@ export class NoteService {
         this.s3Client = new this.XAWS.S3({
             signatureVersion: 'v4'
         });
-        this.notesTable = process.env.TODOS_TABLE;
-        this.globalIndexTodo = process.env.TODO_GLOBAL_INDEX;
-        this.localIndex = process.env.TODO_LOCAL_INDEX;
+        this.notesTable = process.env.NOTES_TABLE;
+        this.globalIndexTodo = process.env.NOTE_GLOBAL_INDEX;
+        this.localIndex = process.env.NOTE_LOCAL_INDEX;
         this.bucketName = process.env.IMAGES_S3_BUCKET;
         this.urlExpiration = process.env.SIGNED_URL_EXPIRATION;
     }
