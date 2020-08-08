@@ -7,6 +7,7 @@ plugins:
   - serverless-plugin-canary-deployments
   - serverless-dynamodb-local
   - serverless-offline
+  - serverless-s3-sync # do upload react app to s3
 
 custom:
   documentation:
@@ -31,6 +32,10 @@ custom:
       migrate: true
     stages:
       - dev
+  bucketName: notes-react-app-hannes
+  s3Sync:
+    - bucketName: ${self:custom.bucketName}
+      localDir: client/build/
 
 provider:
   name: aws
@@ -230,6 +235,15 @@ resources:
                 - HEAD
               MaxAge: 3000
 
+    ClientBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.bucketName}
+        AccessControl: PublicRead
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: index.html
+
     BucketPolicy:
       Type: AWS::S3::BucketPolicy
       Properties:
@@ -244,3 +258,50 @@ resources:
               Resource: 'arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*'
         Bucket: !Ref AttachmentsBucket
 
+    ClientBucketPolicy:
+      Type: AWS::S3:BucketPolicy
+      Properties:
+        Bucket:
+          Ref: ClientBucket
+        PolicyDocument:
+          Statement:
+            - Sid: PublicReadGetObject
+              Effect: Allow
+              Principal: '*'
+              Action: 's3:GetObject'
+              Resource: 'arn:aws:s3:::${self:custom.bucketName}/*'
+
+    CloudFrontDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Origins:
+            - DomainName: ${custom:self.bucketName}.s3.amazonaws.com
+              ID: NoteApp
+              CustomOriginConfig:
+                HTTPPort: 80
+                HTTPSPort: 443
+                OriginProtocolPolicy: https-only
+          Enabled: 'true'
+          DefaultRootObject: index.html
+          CustomErrorResponses:
+            - Error: 404
+              ResponseCode: 200
+              ResponsePagePath: /index.html
+          DefaultCacheBehavior:
+            AllowedMethods:
+              - DELETE
+              - GET
+              - HEAD
+              - OPTIONS
+              - PATCH
+              - POST
+              - PUT
+            TargetOriginId: NoteApp
+            ForwardedValues:
+              QueryString: 'false'
+              Cookies:
+                Forward: none
+            ViewerProtocolPolicy: redirect-to-https
+          ViewerCertificate:
+            CloudFrontDefaultCertificate: true
