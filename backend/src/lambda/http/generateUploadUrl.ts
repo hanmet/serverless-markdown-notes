@@ -16,6 +16,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
     const service = new NoteService();
 
     const isValidNoteId = await service.noteIdExists(noteId, userId);
+    console.log("isValidNoteId: " + isValidNoteId);
     if (!isValidNoteId) {
         logger.error('invalid note id', {noteId: noteId});
         return {

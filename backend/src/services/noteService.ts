@@ -7,7 +7,7 @@ import {UpdateNoteRequest} from '../requests/UpdateNoteRequest';
 export class NoteService {
 
     notesTable: string;
-    globalIndexTodo: string;
+    globalIndexNote: string;
     XAWS: any;
     docClient: any;
     s3Client: any;
@@ -16,7 +16,7 @@ export class NoteService {
     urlExpiration: string;
 
     constructor() {
-        console.log('inside todo service - ctor');
+        console.log('inside note service - ctor');
 
         this.XAWS = AWSXRay.captureAWS(AWS);
         this.docClient = this.createDynamoDBClient();
@@ -24,7 +24,7 @@ export class NoteService {
             signatureVersion: 'v4'
         });
         this.notesTable = process.env.NOTES_TABLE;
-        this.globalIndexTodo = process.env.NOTE_GLOBAL_INDEX;
+        this.globalIndexNote = process.env.NOTE_GLOBAL_INDEX;
         this.localIndex = process.env.NOTE_LOCAL_INDEX;
         this.bucketName = process.env.IMAGES_S3_BUCKET;
         this.urlExpiration = process.env.SIGNED_URL_EXPIRATION;
@@ -35,7 +35,7 @@ export class NoteService {
 
         const result = await this.docClient.query({
             TableName: this.notesTable,
-            IndexName: this.globalIndexTodo,
+            IndexName: this.globalIndexNote,
             KeyConditionExpression: 'userId = :userId',
             ExpressionAttributeValues: {
                 ':userId': userId
@@ -47,7 +47,7 @@ export class NoteService {
     }
 
     async createItem(noteItem: NoteItem): Promise<NoteItem> {
-        console.log('inside todo service - createItem');
+        console.log('inside note service - createItem');
         await this.docClient.put({
             TableName: this.notesTable,
             Item: noteItem
@@ -91,7 +91,7 @@ export class NoteService {
         await this.docClient.update({
             TableName: this.notesTable,
             Key: {
-                todoId: noteId,
+                noteId: noteId,
                 userId: userId
             },
             ExpressionAttributeValues: {
@@ -109,7 +109,7 @@ export class NoteService {
         const result = await this.docClient.get({
             TableName: this.notesTable,
             Key: {
-                todoId: noteId,
+                noteId: noteId,
                 userId: userId
             }
         }).promise();

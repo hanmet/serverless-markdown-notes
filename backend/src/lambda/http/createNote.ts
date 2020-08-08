@@ -11,7 +11,7 @@ import {createLogger} from '../../utils/logger';
 const logger = createLogger('auth');
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const newTodo: CreateNoteRequest = JSON.parse(event.body);
+    const newNote: CreateNoteRequest = JSON.parse(event.body);
 
     const timestamp = new Date().toISOString();
     const noteId = uuidv4();
@@ -24,13 +24,13 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
         title: '',
         text: '',
         attachmentUrls: [],
-        ...newTodo
+        ...newNote
     };
 
     const service = new NoteService();
     const result = await service.createItem(newItem);
 
-    logger.info('new todo item was created', {newItem: result});
+    logger.info('new note item was created', {newItem: result});
 
     return {
         statusCode: 200,
