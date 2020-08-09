@@ -6,10 +6,19 @@ This is a simple application using AWS Lambda and Serverless framework to manage
 
 This application allows creating/removing/updating/fetching of Note items. Each Note item can optionally have multiple attachment images. Each user only has access to Note items he/she created.
 
-
+## Listing Page
 On the listing page of the application the user can see all his/her notes. Each note has a title, text and a list of images.
 The user can add a new note, delete or edit an existing note.
+
+A new note can be created by entering a title and clicking on the button "New Note".
+To edit a note the user needs to click on the pencil button.
+To delete a note, click on the trash can button.
 ![Alt text](/images/serverless-notes-listing-page.png "Listing Page")
+
+## Edit Page
+The Edit page automatically loads data for the selected note.
+The user can edit the title and text. And he can upload images, that get attached to the note. By clicking on the trash can button next to an image, the image get removed from this note.
+![Alt text](/images/serverless-notes-edit-page.png "Edit Page")
 
 ## Authentication
 
