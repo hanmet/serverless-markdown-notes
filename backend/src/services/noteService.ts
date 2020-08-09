@@ -64,13 +64,13 @@ export class NoteService {
             },
             ExpressionAttributeValues: {
                 ':title': updateNote.title,
-                ':text': updateNote.text,
+                ':content': updateNote.content,
                 ':attachmentUrls': updateNote.attachmentUrls,
             },
-            ExpressionAttributeNames: {
-                '#attrName': 'name'
-            },
-            UpdateExpression: 'SET #attrName=:name, done=:done, dueDate=:dueDate',
+            // ExpressionAttributeNames: {
+            //     '#attrName': 'name'
+            // },
+            UpdateExpression: 'SET title=:title, content=:content, attachmentUrls=:attachmentUrls',
             ReturnValues: 'ALL_NEW'
         }).promise();
     }
@@ -86,7 +86,7 @@ export class NoteService {
         }).promise();
     }
 
-    async updateNoteAttachment(noteId: String, userId: String) {
+    async updateNoteAttachment(noteId: String, userId: String, attachmentId: String) {
 
         await this.docClient.update({
             TableName: this.notesTable,
@@ -95,12 +95,12 @@ export class NoteService {
                 userId: userId
             },
             ExpressionAttributeValues: {
-                ':attachmentUrl': `https://${this.bucketName}.s3.amazonaws.com/${noteId}`
+                ':attachmentUrls': [`https://${this.bucketName}.s3.amazonaws.com/${attachmentId}`]
             },
             ExpressionAttributeNames: {
-                '#attachmentUrl': 'attachmentUrl'
+                '#attachmentUrls': 'attachmentUrls'
             },
-            UpdateExpression: 'SET #attachmentUrl=:attachmentUrl',
+            UpdateExpression: 'SET #attachmentUrls=:attachmentUrls',
             ReturnValues: 'ALL_NEW'
         }).promise();
     }

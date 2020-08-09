@@ -4,6 +4,7 @@ import {APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler} fro
 import {getUserId} from '../utils';
 import {NoteService} from '../../services/noteService';
 import {createLogger} from '../../utils/logger';
+import {v4 as uuidv4} from 'uuid';
 
 const logger = createLogger('auth');
 
@@ -14,6 +15,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
 
     const userId = getUserId(event);
     const service = new NoteService();
+    const attachmentId = uuidv4();
 
     const isValidNoteId = await service.noteIdExists(noteId, userId);
     console.log("isValidNoteId: " + isValidNoteId);
@@ -31,9 +33,9 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
         };
     }
 
-    await service.updateNoteAttachment(noteId, userId);
+    await service.updateNoteAttachment(noteId, userId, attachmentId);
 
-    const url = service.getUploadUrl(noteId);
+    const url = service.getUploadUrl(attachmentId);
 
     logger.info('successfully retrieved upload url', {noteId: noteId});
 

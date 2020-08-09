@@ -3,6 +3,6 @@
  */
 export interface UpdateNoteRequest {
   title: string
-  text: string
+  content: string
   attachmentUrls: [string]
 }
