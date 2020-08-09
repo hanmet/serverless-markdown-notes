@@ -100,7 +100,7 @@ export class NoteService {
             ExpressionAttributeNames: {
                 '#attachmentUrls': 'attachmentUrls'
             },
-            UpdateExpression: 'SET #attachmentUrls=:attachmentUrls',
+            UpdateExpression: 'SET #attachmentUrls = list_append (#attachmentUrls, :attachmentUrls)',
             ReturnValues: 'ALL_NEW'
         }).promise();
     }

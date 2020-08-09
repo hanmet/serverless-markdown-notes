@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {Form, Button, Image} from 'semantic-ui-react'
+import {Form, Button, Image, Icon} from 'semantic-ui-react'
 import Auth from '../auth/Auth'
 import {getNotes, getUploadUrl, patchNote, uploadFile} from '../api/notes-api'
 import {Note} from "../types/Note";
@@ -38,7 +38,7 @@ export class EditNote extends React.PureComponent<EditNoteProps, EditNoteState> 
     this.getNote();
   }
 
-  async getNote(){
+  async getNote() {
     try {
       console.log("about to get notes")
       let notes = await getNotes(this.props.auth.getIdToken())
@@ -81,22 +81,6 @@ export class EditNote extends React.PureComponent<EditNoteProps, EditNoteState> 
       this.setUploadState(UploadState.UploadingFile)
       await uploadFile(uploadUrl, this.state.file)
       await this.getNote();
-
-      // this.setState(state => {
-      //   const newAttachmentUrls: string[] = state.note.attachmentUrls.concat([uploadUrl]);
-      //   return {
-      //     file: state.file,
-      //     uploadState: state.uploadState,
-      //     note: {
-      //       noteId: state.note.noteId,
-      //       content: state.note.content,
-      //       attachmentUrls: newAttachmentUrls,
-      //       createdAt: state.note.createdAt,
-      //       title: state.note.title
-      //     }
-      //   };
-      // });
-
       alert('File was uploaded!')
     } catch (e) {
       alert('Could not upload a file: ' + e.message)
@@ -108,7 +92,12 @@ export class EditNote extends React.PureComponent<EditNoteProps, EditNoteState> 
   handleSubmitNote = async (event: React.SyntheticEvent) => {
     console.log("About to save note")
     const updatedNote = this.state.note;
-    await patchNote(this.props.auth.getIdToken(), this.state.note.noteId, updatedNote);
+    try {
+      await patchNote(this.props.auth.getIdToken(), this.state.note.noteId, updatedNote);
+      alert('Note was saved!')
+    } catch (e) {
+      alert('Could not save note: ' + e.message)
+    }
   }
 
   setUploadState(uploadState: UploadState) {
@@ -135,6 +124,18 @@ export class EditNote extends React.PureComponent<EditNoteProps, EditNoteState> 
     }))
   }
 
+  async onImageDelete(key: number) {
+    console.log("deleting image: " + key);
+    console.log("old attachmentUrls: " + JSON.stringify(this.state.note.attachmentUrls))
+    let newAttachmentUrls = this.state.note.attachmentUrls;
+    newAttachmentUrls.splice(key, 1);
+    console.log("new attachmentUrls: " + JSON.stringify(newAttachmentUrls))
+    this.setState(prevState => ({
+      note: {...prevState.note, attachmentUrls: newAttachmentUrls}
+    }))
+    console.log(JSON.stringify(this.state.note));
+  }
+
 
   render() {
     return (
@@ -158,7 +159,12 @@ export class EditNote extends React.PureComponent<EditNoteProps, EditNoteState> 
         <h3>Images</h3>
         <div>
           {this.state.note.attachmentUrls.map((url, key) =>
-            <Image src={url} key={key} size="small" wrapped/>
+            <div>
+              <Image src={url} key={"image" + key} size="small" wrapped/>
+              <Button key={"button" + key} icon color="red" onClick={() => this.onImageDelete(key)}>
+                <Icon name="delete"/>
+              </Button>
+            </div>
           )}
         </div>
         <Form onSubmit={this.handleSubmitFile}>
